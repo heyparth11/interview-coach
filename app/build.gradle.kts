@@ -1,4 +1,5 @@
 import java.util.Properties
+import java.io.FileInputStream
 
 plugins {
     alias(libs.plugins.android.application)
@@ -6,6 +7,19 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
 }
+
+
+val keystorePropertiesFile =
+    rootProject.file("key.properties")
+
+val keystoreProperties = Properties()
+
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(
+        FileInputStream(keystorePropertiesFile)
+    )
+}
+
 
 android {
     namespace = "com.example.viewcoach"
@@ -42,13 +56,36 @@ android {
 
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile =
+                rootProject.file(keystoreProperties["storeFile"] as String)
+
+            storePassword =
+                keystoreProperties["storePassword"] as String
+
+            keyAlias =
+                keystoreProperties["keyAlias"] as String
+
+            keyPassword =
+                keystoreProperties["keyPassword"] as String
+        }
+    }
+
+
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig =
+                signingConfigs.getByName("release")
+        }
+        debug {
+            signingConfig =
+                signingConfigs.getByName("release")
         }
     }
     compileOptions {
