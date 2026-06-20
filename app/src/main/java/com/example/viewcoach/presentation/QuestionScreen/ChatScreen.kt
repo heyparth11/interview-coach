@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -59,7 +60,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -69,11 +69,7 @@ import com.example.viewcoach.AppTheme
 import com.example.viewcoach.domain.model.ChatMessage
 import com.example.viewcoach.domain.model.Sender
 
-// Color definitions matching the screenshot
-val GradientStart = Color(0xFF3B42E3)
-val GradientMiddle = Color(0xFF7A59E3)
-val GradientEnd = Color(0xFFF285C7)
-val UserBubbleColor = Color(0xFF4330E6)
+val UserBubbleColor = Color(0xFF34333B)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,8 +107,7 @@ fun ChatFlowScreen(
                 }
             )
         },
-//        containerColor = MaterialTheme.colorScheme.background,
-        containerColor = Color.Transparent,
+        containerColor = MaterialTheme.colorScheme.background,
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -157,6 +152,7 @@ fun ChatHeader(onBackClick: () -> Unit, onMenuClick: () -> Unit) {
     Box(
         modifier =
             Modifier
+                .statusBarsPadding()
                 .fillMaxWidth()
                 .background(Color.Transparent)
                 .padding(vertical = 8.dp, horizontal = 24.dp)
@@ -172,13 +168,13 @@ fun ChatHeader(onBackClick: () -> Unit, onMenuClick: () -> Unit) {
                         onClick = onBackClick,
                         colors =
                             IconButtonDefaults.iconButtonColors(
-                                containerColor = Color.Black.copy(alpha = 0.2f)
+                                containerColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f)
                             )
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color.Black
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
@@ -188,13 +184,13 @@ fun ChatHeader(onBackClick: () -> Unit, onMenuClick: () -> Unit) {
                     onClick = onMenuClick,
                     colors =
                         IconButtonDefaults.iconButtonColors(
-                            containerColor = Color.Black.copy(alpha = 0.2f)
+                            containerColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f)
                         )
                 ) {
                     Icon(
                         imageVector = Icons.Default.Menu,
                         contentDescription = "Menu",
-                        tint = Color.Black
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
             }
@@ -209,16 +205,16 @@ fun UserMessageRow(message: ChatMessage) {
             modifier =
                 Modifier
                     .background(
-                        color = UserBubbleColor,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f),
                         shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 16.dp)
                     )
                     .padding(horizontal = 16.dp, vertical = 12.dp)
                     .widthIn(max = 280.dp)
-        ) { Text(text = message.text ?: "", color = Color.White, fontSize = 15.sp) }
+        ) { Text(text = message.text ?: "", color =  MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 15.sp) }
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = message.timestamp,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 11.sp,
             modifier = Modifier.padding(end = 4.dp)
         )
@@ -237,10 +233,14 @@ fun AssistantMessageRow(message: ChatMessage) {
                 Modifier
                     .size(36.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.secondaryContainer),
+                    .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f)),
             contentAlignment = Alignment.Center
         ) {
-            Text("AI", fontWeight = FontWeight.Bold)
+            Text(
+                text = "AI",
+                color = MaterialTheme.colorScheme.onBackground,
+                fontWeight = FontWeight.Bold
+            )
         }
         Spacer(modifier = Modifier.width(8.dp))
 
@@ -280,23 +280,22 @@ fun AssistantTypingRow() {
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.Top
     ) {
-        // Placeholder Avatar Circle
         Box(
             modifier =
                 Modifier
                     .size(36.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
-        )
+                    .background(MaterialTheme.colorScheme.secondaryContainer),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "AI",
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                fontWeight = FontWeight.Bold
+            )
+        }
         Spacer(modifier = Modifier.width(8.dp))
         Column {
-            Text(
-                text = "Assistant",
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(bottom = 4.dp)
-            )
             TypingIndicator()
         }
     }
@@ -397,10 +396,11 @@ fun ChatInputBar(text: String, onTextChange: (String) -> Unit, onSend: () -> Uni
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .navigationBarsPadding(),
+            .navigationBarsPadding()
+            .padding(bottom = 12.dp),
         shape = RoundedCornerShape(50),
-        color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
     ) {
         Row(
             modifier = Modifier
@@ -412,7 +412,7 @@ fun ChatInputBar(text: String, onTextChange: (String) -> Unit, onSend: () -> Uni
                 Icon(
                     imageVector = Icons.Default.PermMedia,
                     contentDescription = "Emoji",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -422,17 +422,14 @@ fun ChatInputBar(text: String, onTextChange: (String) -> Unit, onSend: () -> Uni
                 placeholder = {
                     Text(
                         "Reply ...",
-                        color =
-                            MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                alpha = 0.6f
-                            )
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                     )
                 },
                 modifier = Modifier.weight(1f),
                 colors =
                     TextFieldDefaults.colors(
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
                         disabledContainerColor = Color.Transparent,
